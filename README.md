@@ -20,6 +20,26 @@ chmod +x install.sh
 
 `~/.claude/skills/` にシンボリックリンクが作成されます。
 
+## 実験版 (Experimental)
+
+`experimental/` には開発中・試験的なスキルが配置されています。安定版とは異なり、自動インストールされません。
+
+### 一覧表示
+
+```bash
+./install-experimental.sh
+```
+
+### インストール
+
+```bash
+./install-experimental.sh <skill-name> [<skill-name> ...]
+```
+
+### アンインストール
+
+安定版と同様に `rm ~/.claude/skills/<skill-name>` で削除できます。
+
 ## アップデート
 
 ```bash
