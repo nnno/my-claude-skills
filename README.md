@@ -1,4 +1,4 @@
-# my-claude-tools
+# my-claude-skills
 
 Claude Code向けのカスタムSkillsコレクションです。
 
@@ -7,12 +7,13 @@ Claude Code向けのカスタムSkillsコレクションです。
 | Skill | 説明 |
 |---|---|
 | [skill-nav](./skills/skill-nav/) | Claude Skillsの設計ナビゲーションと品質レビュー |
+| [inspector2-risk-assessor](./skills/inspector2-risk-assessor/) | AWS Inspector2の脆弱性findingの実質リスク評価 |
 
 ## インストール
 
 ```bash
-git clone https://github.com/<your-username>/my-claude-tools.git
-cd my-claude-tools
+git clone https://github.com/nnno/my-claude-skills.git
+cd my-claude-skills
 chmod +x install.sh
 ./install.sh
 ```
@@ -22,7 +23,7 @@ chmod +x install.sh
 ## アップデート
 
 ```bash
-cd my-claude-tools
+cd my-claude-skills
 git pull
 ```
 
@@ -32,10 +33,10 @@ git pull
 
 ```bash
 # 個別
-rm ~/.claude/skills/skill-nav
+rm ~/.claude/skills/<skill-name>
 
 # 全て
-cd my-claude-tools
+cd my-claude-skills
 for dir in skills/*/; do rm -f ~/.claude/skills/"$(basename "$dir")"; done
 ```
 
