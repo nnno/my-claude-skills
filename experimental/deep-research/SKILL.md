@@ -1,5 +1,6 @@
 ---
 name: deep-research
+allowed-tools: WebSearch, WebFetch(domain:*)
 description: >
   トピックについて深いリサーチを実行し、構造化されたMarkdownレポートを生成する。
   WebSearch/WebFetchで20〜50クエリを並列実行し、複数情報源のクロスチェックを行う。
