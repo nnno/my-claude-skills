@@ -36,9 +36,21 @@ chmod +x install.sh
 ./install-experimental.sh <skill-name> [<skill-name> ...]
 ```
 
+### 実験的コマンド
+
+`experimental/commands/` には実験的なカスタムコマンドが配置されています。インストールすると Claude Code で `/command-name` として呼び出せます。
+
+```bash
+# 一覧表示（スキルと合わせて表示）
+./install-experimental.sh
+
+# インストール
+./install-experimental.sh <command-name>
+```
+
 ### アンインストール
 
-安定版と同様に `rm ~/.claude/skills/<skill-name>` で削除できます。
+安定版と同様に `rm ~/.claude/skills/<skill-name>` で削除できます。コマンドは `rm ~/.claude/commands/<command-name>.md` で削除できます。
 
 ## アップデート
 

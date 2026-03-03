@@ -3,13 +3,16 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 EXP_DIR="${SCRIPT_DIR}/experimental"
-DEST="${HOME}/.claude/skills"
+SKILL_DEST="${HOME}/.claude/skills"
+CMD_DIR="${EXP_DIR}/commands"
+CMD_DEST="${HOME}/.claude/commands"
 
 # 利用可能な実験的スキル一覧を取得
 list_skills() {
   local found=false
   for dir in "${EXP_DIR}"/*/; do
     [ -d "$dir" ] || continue
+    [ "$(basename "$dir")" = "commands" ] && continue
     if [ -f "${dir}SKILL.md" ]; then
       found=true
       name="$(basename "$dir")"
@@ -27,6 +30,28 @@ list_skills() {
   fi
 }
 
+# 利用可能な実験的コマンド一覧を取得
+list_commands() {
+  local found=false
+  if [ -d "$CMD_DIR" ]; then
+    for file in "${CMD_DIR}"/*.md; do
+      [ -f "$file" ] || continue
+      found=true
+      name="$(basename "$file" .md)"
+      # フロントマターからdescriptionを抽出
+      desc=$(sed -n '/^---$/,/^---$/{ /^description:/{ s/^description: *//; s/^["'"'"']//; s/["'"'"']$//; p; } }' "$file" 2>/dev/null || true)
+      if [ -n "$desc" ]; then
+        echo "  ${name} — ${desc}"
+      else
+        echo "  ${name}"
+      fi
+    done
+  fi
+  if [ "$found" = false ]; then
+    echo "  (実験的コマンドはありません)"
+  fi
+}
+
 # スキルをインストール
 install_skill() {
   local name="$1"
@@ -41,9 +66,24 @@ install_skill() {
     return 1
   fi
 
-  mkdir -p "$DEST"
-  ln -sfn "$skill_dir" "${DEST}/${name}"
-  echo "  ✓ ${name}"
+  mkdir -p "$SKILL_DEST"
+  ln -sfn "$skill_dir" "${SKILL_DEST}/${name}"
+  echo "  ✓ ${name} (skill)"
+}
+
+# コマンドをインストール
+install_command() {
+  local name="$1"
+  local cmd_file="${CMD_DIR}/${name}.md"
+
+  if [ ! -f "$cmd_file" ]; then
+    echo "  ✗ ${name} (コマンドファイルが見つかりません)" >&2
+    return 1
+  fi
+
+  mkdir -p "$CMD_DEST"
+  ln -sfn "$cmd_file" "${CMD_DEST}/${name}.md"
+  echo "  ✓ ${name} (command)"
 }
 
 if [ $# -eq 0 ]; then
@@ -51,22 +91,33 @@ if [ $# -eq 0 ]; then
   echo ""
   list_skills
   echo ""
-  echo "インストール: $0 <skill-name> [<skill-name> ...]"
+  echo "利用可能な実験的コマンド:"
+  echo ""
+  list_commands
+  echo ""
+  echo "インストール: $0 <name> [<name> ...]"
   exit 0
 fi
 
-echo "実験的スキルをインストール中..."
+echo "実験的スキル/コマンドをインストール中..."
 echo ""
 
 errors=0
-for skill in "$@"; do
-  install_skill "$skill" || errors=$((errors + 1))
+for name in "$@"; do
+  if [ -f "${CMD_DIR}/${name}.md" ]; then
+    install_command "$name" || errors=$((errors + 1))
+  elif [ -d "${EXP_DIR}/${name}" ] && [ -f "${EXP_DIR}/${name}/SKILL.md" ]; then
+    install_skill "$name" || errors=$((errors + 1))
+  else
+    echo "  ✗ ${name} (スキルにもコマンドにも見つかりません)" >&2
+    errors=$((errors + 1))
+  fi
 done
 
 echo ""
 if [ $errors -eq 0 ]; then
-  echo "インストール先: ${DEST}"
+  echo "完了"
 else
-  echo "一部のスキルのインストールに失敗しました (${errors} 件)"
+  echo "一部のインストールに失敗しました (${errors} 件)"
   exit 1
 fi
