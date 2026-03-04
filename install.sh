@@ -17,5 +17,25 @@ for dir in "${SCRIPT_DIR}/skills"/*/; do
   fi
 done
 
+# agents
+AGENT_DEST="${HOME}/.claude/agents"
+mkdir -p "$AGENT_DEST"
+for file in "${SCRIPT_DIR}/agents"/*.md; do
+  [ -f "$file" ] || continue
+  name="$(basename "$file")"
+  ln -sfn "$file" "${AGENT_DEST}/${name}"
+  echo "  ✓ ${name} (agent)"
+done
+
+# commands
+CMD_DEST="${HOME}/.claude/commands"
+mkdir -p "$CMD_DEST"
+for file in "${SCRIPT_DIR}/commands"/*.md; do
+  [ -f "$file" ] || continue
+  name="$(basename "$file")"
+  ln -sfn "$file" "${CMD_DEST}/${name}"
+  echo "  ✓ ${name} (command)"
+done
+
 echo ""
-echo "Installed to ${DEST}"
+echo "Installed to ${DEST}, ${AGENT_DEST}, ${CMD_DEST}"
